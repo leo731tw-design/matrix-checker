@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>基质完美词条速查</title>
+    <style>
+        :root {
+            --bg-color: #f5f5f7;
+            --card-bg: #ffffff;
+            --primary: #007aff;
+            --text-main: #1d1d1f;
+            --text-sub: #86868b;
+            --border-radius: 12px;
+            --rarity-6: #d35400; /* 暗橙色表示六星 */
+            --rarity-5: #b7950b; /* 暗金色表示五星 */
+        }
+ 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+ 
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+ 
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+ 
+        .input-group {
+            margin-bottom: 15px;
+        }
+ 
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+ 
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            background-color: #fff;
+            -webkit-appearance: none; /* 移除默认样式以便自定义 */
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007AFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px top 50%;
+            background-size: 12px auto;
+        }
+ 
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,122,255,0.1);
+        }
+ 
+        .result-area {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e5e5;
+        }
+ 
+        .result-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-sub);
+        }
+ 
+        .match-card {
+            background: #f9f9f9;
+            border-left: 5px solid #ccc;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            animation: fadeIn 0.3s ease;
+        }
+ 
+        .match-card.rarity-六星 {
+            border-left-color: var(--rarity-6);
+            background-color: #fff5eb;
+        }
+ 
+        .match-card.rarity-五星 {
+            border-left-color: var(--rarity-5);
+            background-color: #fffae6;
+        }
+ 
+        .weapon-name {
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+ 
+        .weapon-tag {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: white;
+            background-color: #888;
+        }
+ 
+        .tag-6 { background-color: var(--rarity-6); }
+        .tag-5 { background-color: var(--rarity-5); }
+ 
+        .weapon-info {
+            margin-top: 4px;
+            font-size: 14px;
+            color: #555;
+        }
+ 
+        .no-match {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-style: italic;
+        }
+ 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+ 
+    <h1>基质完美词条速查</h1>
+ 
+    <div class="container">
+        <div class="input-group">
+            <label>主词条 (Main)</label>
+            <select id="mainSelect" onchange="checkMatch()">
+                <option value="">请选择...</option>
+            </select>
+        </div>
+ 
+        <div class="input-group">
+            <label>副词条 (Sub)</label>
+            <select id="subSelect" onchange="checkMatch()">
+                <option value="">请选择...</option>
+            </select>
+        </div>
+ 
+        <div class="input-group">
+            <label>技能 (Skill)</label>
+            <select id="skillSelect" onchange="checkMatch()">
+                <option value="">请选择...</option>
+            </select>
+        </div>
+ 
+        <div class="result-area">
+            <div class="result-title">匹配结果：</div>
+            <div id="results">
+                <div class="no-match">请选择三个词条以开始查询</div>
+            </div>
+        </div>
+    </div>
+ 
+    <script>
+        // 嵌入的JSON数据
+        const db = [
+          {"name": "钢铁余音", "rarity": "五星", "type": "单手剑", "main_stat": "敏捷提升", "sub_stat": "物理伤害提升", "skill": "技巧"},
+          {"name": "坚城铸造者", "rarity": "五星", "type": "单手剑", "main_stat": "智识提升", "sub_stat": "终结技能效率提升", "skill": "昂扬"},
+          {"name": "逐鳞3.0", "rarity": "五星", "type": "单手剑", "main_stat": "力量提升", "sub_stat": "寒冷伤害提升", "skill": "压制"},
+          {"name": "十二问", "rarity": "五星", "type": "单手剑", "main_stat": "敏捷提升", "sub_stat": "攻击提升", "skill": "附术"},
+          {"name": "O.B.J.轻芒", "rarity": "五星", "type": "单手剑", "main_stat": "敏捷提升", "sub_stat": "攻击提升", "skill": "流转"},
+          {"name": "仰止", "rarity": "五星", "type": "单手剑", "main_stat": "敏捷提升", "sub_stat": "物理伤害提升", "skill": "夜幕"},
+          {"name": "悼亡诗", "rarity": "五星", "type": "施术单元", "main_stat": "智识提升", "sub_stat": "攻击提升", "skill": "夜幕"},
+          {"name": "莫奈何", "rarity": "五星", "type": "施术单元", "main_stat": "意志提升", "sub_stat": "终结技能效率提升", "skill": "昂扬"},
+          {"name": "迷失荒野", "rarity": "五星", "type": "施术单元", "main_stat": "智识提升", "sub_stat": "电磁伤害提升", "skill": "附术"},
+          {"name": "布道自由", "rarity": "五星", "type": "施术单元", "main_stat": "意志提升", "sub_stat": "治疗效率提升", "skill": "医疗"},
+          {"name": "O.B.J.术识", "rarity": "五星", "type": "施术单元", "main_stat": "智识提升", "sub_stat": "源石技艺强度提升", "skill": "追袭"},
+          {"name": "作品：众生", "rarity": "五星", "type": "手铳", "main_stat": "敏捷提升", "sub_stat": "法术提升", "skill": "附术"},
+          {"name": "O.B.J.迅极", "rarity": "五星", "type": "手铳", "main_stat": "敏捷提升", "sub_stat": "终结技能效率提升", "skill": "进发"},
+          {"name": "理性告别", "rarity": "五星", "type": "手铳", "main_stat": "力量提升", "sub_stat": "灼热伤害提升", "skill": "追袭"},
+          {"name": "探骊", "rarity": "五星", "type": "双手剑", "main_stat": "力量提升", "sub_stat": "终结技能效率提升", "skill": "进发"},
+          {"name": "古渠", "rarity": "五星", "type": "双手剑", "main_stat": "力量提升", "sub_stat": "源石技艺强度提升", "skill": "残暴"},
+          {"name": "终点之声", "rarity": "五星", "type": "双手剑", "main_stat": "力量提升", "sub_stat": "生命提升", "skill": "医疗"},
+          {"name": "O.B.J.重荷", "rarity": "五星", "type": "双手剑", "main_stat": "力量提升", "sub_stat": "生命提升", "skill": "效益"},
+          {"name": "嵌合正义", "rarity": "五星", "type": "长柄武器", "main_stat": "力量提升", "sub_stat": "终结技能效率提升", "skill": "残暴"},
+          {"name": "O.B.J.尖峰", "rarity": "五星", "type": "长柄武器", "main_stat": "意志提升", "sub_stat": "物理伤害提升", "skill": "附术"},
+          {"name": "向心之引", "rarity": "五星", "type": "长柄武器", "main_stat": "意志提升", "sub_stat": "电磁伤害提升", "skill": "压制"},
+          {"name": "宏愿", "rarity": "六星", "type": "单手剑", "main_stat": "敏捷提升", "sub_stat": "攻击提升", "skill": "附术"},
+          {"name": "不知归", "rarity": "六星", "type": "单手剑", "main_stat": "意志提升", "sub_stat": "攻击提升", "skill": "流转"},
+          {"name": "熔铸火焰", "rarity": "六星", "type": "单手剑", "main_stat": "智识提升", "sub_stat": "攻击提升", "skill": "夜幕"},
+          {"name": "黯色火炬", "rarity": "六星", "type": "单手剑", "main_stat": "智识提升", "sub_stat": "灼热伤害提升", "skill": "附术"},
+          {"name": "扶摇", "rarity": "六星", "type": "单手剑", "main_stat": "主能力提升", "sub_stat": "暴击率提升", "skill": "夜幕"},
+          {"name": "热熔切割器", "rarity": "六星", "type": "单手剑", "main_stat": "意志提升", "sub_stat": "攻击提升", "skill": "流转"},
+          {"name": "显赫声明", "rarity": "六星", "type": "单手剑", "main_stat": "主能力提升", "sub_stat": "物理伤害提升", "skill": "残暴"},
+          {"name": "白夜新星", "rarity": "六星", "type": "单手剑", "main_stat": "主能力提升", "sub_stat": "源石技艺强度提升", "skill": "附术"},
+          {"name": "使命必达", "rarity": "六星", "type": "施术单元", "main_stat": "意志提升", "sub_stat": "终结技能效率提升", "skill": "追袭"},
+          {"name": "沧溟星梦", "rarity": "六星", "type": "施术单元", "main_stat": "智识提升", "sub_stat": "治疗效率提升", "skill": "附术"},
+          {"name": "作品：蚀迹", "rarity": "六星", "type": "施术单元", "main_stat": "意志提升", "sub_stat": "自然伤害提升", "skill": "压制"},
+          {"name": "爆破单元", "rarity": "六星", "type": "施术单元", "main_stat": "主能力提升", "sub_stat": "源石技艺强度提升", "skill": "进发"},
+          {"name": "遗忘", "rarity": "六星", "type": "施术单元", "main_stat": "智识提升", "sub_stat": "法术提升", "skill": "夜幕"},
+          {"name": "骑士精神", "rarity": "六星", "type": "施术单元", "main_stat": "意志提升", "sub_stat": "生命提升", "skill": "医疗"},
+          {"name": "艺术暴君", "rarity": "六星", "type": "手铳", "main_stat": "智识提升", "sub_stat": "暴击率提升", "skill": "切骨"},
+          {"name": "领航者", "rarity": "六星", "type": "手铳", "main_stat": "智识提升", "sub_stat": "寒冷伤害提升", "skill": "附术"},
+          {"name": "楔子", "rarity": "六星", "type": "手铳", "main_stat": "主能力提升", "sub_stat": "暴击率提升", "skill": "附术"},
+          {"name": "同类相食", "rarity": "六星", "type": "手铳", "main_stat": "主能力提升", "sub_stat": "法术提升", "skill": "附术"},
+          {"name": "大雷斑", "rarity": "六星", "type": "双手剑", "main_stat": "力量提升", "sub_stat": "生命提升", "skill": "医疗"},
+          {"name": "赫拉芬格", "rarity": "六星", "type": "双手剑", "main_stat": "力量提升", "sub_stat": "攻击提升", "skill": "进发"},
+          {"name": "典范", "rarity": "六星", "type": "双手剑", "main_stat": "主能力提升", "sub_stat": "攻击提升", "skill": "压制"},
+          {"name": "昔日精品", "rarity": "六星", "type": "双手剑", "main_stat": "意志提升", "sub_stat": "生命提升", "skill": "效益"},
+          {"name": "破碎君王", "rarity": "六星", "type": "双手剑", "main_stat": "力量提升", "sub_stat": "暴击率提升", "skill": "粉碎"},
+          {"name": "负山", "rarity": "六星", "type": "长柄武器", "main_stat": "敏捷提升", "sub_stat": "物理伤害提升", "skill": "效益"},
+          {"name": "骁勇", "rarity": "六星", "type": "长柄武器", "main_stat": "敏捷提升", "sub_stat": "物理伤害提升", "skill": "技巧"},
+          {"name": "J.E.T.", "rarity": "六星", "type": "长柄武器", "main_stat": "主能力提升", "sub_stat": "攻击提升", "skill": "技巧"}
+        ];
+ 
+        // 初始化下拉菜单
+        function init() {
+            const mainSet = new Set();
+            const subSet = new Set();
+            const skillSet = new Set();
+ 
+            db.forEach(item => {
+                mainSet.add(item.main_stat);
+                subSet.add(item.sub_stat);
+                skillSet.add(item.skill);
+            });
+ 
+            populateSelect('mainSelect', mainSet);
+            populateSelect('subSelect', subSet);
+            populateSelect('skillSelect', skillSet);
+        }
+ 
+        function populateSelect(id, set) {
+            const select = document.getElementById(id);
+            const sortedArray = Array.from(set).sort();
+            sortedArray.forEach(val => {
+                const option = document.createElement('option');
+                option.value = val;
+                option.text = val;
+                select.appendChild(option);
+            });
+        }
+ 
+        function checkMatch() {
+            const m = document.getElementById('mainSelect').value;
+            const s = document.getElementById('subSelect').value;
+            const k = document.getElementById('skillSelect').value;
+            const resultDiv = document.getElementById('results');
+ 
+            if (!m || !s || !k) {
+                resultDiv.innerHTML = '<div class="no-match">请完整选择三个词条</div>';
+                return;
+            }
+ 
+            const matches = db.filter(item => 
+                item.main_stat === m && 
+                item.sub_stat === s && 
+                item.skill === k
+            );
+ 
+            if (matches.length === 0) {
+                resultDiv.innerHTML = `
+                    <div class="no-match" style="color:#d35400; font-weight:bold;">
+                        未找到完美匹配的武器
+                    </div>
+                    <div style="text-align:center; font-size:12px; color:#999; margin-top:5px;">
+                        (该组合可能不是任何武器的最佳基质)
+                    </div>
+                `;
+            } else {
+                let html = '';
+                matches.forEach(w => {
+                    const tagClass = w.rarity === '六星' ? 'tag-6' : 'tag-5';
+                    html += `
+                        <div class="match-card rarity-${w.rarity}">
+                            <div class="weapon-name">
+                                ${w.name}
+                                <span class="weapon-tag ${tagClass}">${w.rarity}</span>
+                            </div>
+                            <div class="weapon-info">
+                                类型：${w.type}
+                            </div>
+                        </div>
+                    `;
+                });
+                resultDiv.innerHTML = html;
+            }
+        }
+ 
+        // 启动
+        init();
+    </script>
+</body>
+</html>
